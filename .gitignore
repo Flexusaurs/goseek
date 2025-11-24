@@ -1,0 +1,49 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+*.wasm
+*.o
+*.cgo1.go
+*.cgo2.c
+_cgo_export.*
+
+# Test binary, generated with go test -c
+*.test
+
+# Output of the go generate command
+*.pb.go
+
+# Dependency directories (vendor)
+vendor/
+
+# Go module cache
+# This can be ignored as it's typically managed by Go itself.
+# However, if you are using a tool that directly interacts with it,
+# you might need to adjust this.
+.cache/
+go.sum
+
+# IDE-specific files
+# VS Code
+.vscode/
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+# Vim
+*.swp
+*.swo
+# Emacs
+*~
+# Other common editor/OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment variables
+.env
+.env.*
