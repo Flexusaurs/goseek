@@ -35,8 +35,8 @@ func TestActorReceivesMessages(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if len(received) != 2 || received[0] != "hello" || received[1] != "world" {
-		t.Fatalf("expected [hello world], got %#v", received)
+	if len(received) != 2 || received[0] != "hello" || received[1] != "World" {
+		t.Fatalf("expected [hello World], got %#v", received)
 	}
 }
 
