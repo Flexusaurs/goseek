@@ -20,17 +20,19 @@ func (s *ActorSystem) Spawn(actor Actor, mailboxSize int) *PID {
 func (s *ActorSystem) SpawnWithSupervisor(supervisor *PID, actor Actor, mailboxSize int) *PID {
 	pid := &PID{
 		inbox:      make(chan Message, mailboxSize),
-		supervisor: supervisor,
+		supervisor: supervisor, // initial supervisor
 	}
 
 	go func() {
 		defer func() {
-			r := recover()
-			if r != nil && supervisor != nil {
-				supervisor.Send(ActorCrashed{
-					Actor: pid,
-					Err:   errors.New("Actor Crashed"),
-				})
+			if r := recover(); r != nil {
+				// report to supervisor if present (best-effort)
+				if supervisor != nil {
+					supervisor.Send(ActorCrashed{
+						Actor: pid,
+						Err:   errors.New("actor crashed"),
+					})
+				}
 			}
 		}()
 

@@ -2,7 +2,6 @@ package actors
 
 import (
 	"context"
-	"fmt"
 )
 
 type RestartPolicy int
@@ -12,41 +11,24 @@ const (
 	RestartAlways
 )
 
-//supervisor is an actor for receiving crash reports and restarts children proc.
-
+// Supervisor returns an actor which spawns and (optionally) restarts a single child actor.
+// policy: RestartAlways will respawn the child on ActorCrashed.
 func Supervisor(policy RestartPolicy, childLogic Actor, mailbox int, system *ActorSystem) Actor {
 	return func(ctx context.Context, self *PID, msg Message) {
-		switch msg.(type) {
+		switch m := msg.(type) {
 		case Started:
-			//spawn first child
-			self.child = system.SpawnWithSupervisor(self, childLogic, mailbox)
-
+			// spawn first child
+			child := system.SpawnWithSupervisor(self, childLogic, mailbox)
+			self.SetChild(child)
 		case ActorCrashed:
+			// note: m contains the crash info if needed
 			if policy == RestartAlways {
-				self.child = system.SpawnWithSupervisor(self, childLogic, mailbox)
+				child := system.SpawnWithSupervisor(self, childLogic, mailbox)
+				self.SetChild(child)
 			}
-
 		case MailboxOverflow:
-			//TODO: overflow logic: log/drop/resize
-			_ = msg
-			fmt.Println("mailbox overflow")
-
+			// optional: handle overflow (log/resize/notify). keep noop here.
+			_ = m
 		}
 	}
-}
-
-/*
-	 func (self *PID) spawnChild(ctx context.Context, child Actor, mailbox int) *PID {
-		system := NewSystem(ctx)
-		return system.SpawnWithSupervisor(self, child, mailbox)
-	}
-*/
-func (self *PID) SetChild(pid *PID) {
-	self.child = pid
-}
-
-//var childkey = struct{}{}
-
-func (p *PID) Child() *PID {
-	return p.child
 }
